@@ -101,7 +101,8 @@ class Module:
     def __call__(self, *args: Any, **kwargs: Any) -> Any:
         """让 Module 对象可以像函数一样被调用
 
-        Returns:
+        Returns
+        -------
             返回正向传播的结果，即模型的预测结果
 
         """
