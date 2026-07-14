@@ -31,13 +31,15 @@ class Module:
 
     def train(self) -> None:
         """Set the mode of this module and all descendent modules to `train`."""
-        # TODO: Implement for Task 0.4.
-        raise NotImplementedError("Need to implement for Task 0.4")
+        self.training = True
+        for m in self.modules():
+            m.train()
 
     def eval(self) -> None:
         """Set the mode of this module and all descendent modules to `eval`."""
-        # TODO: Implement for Task 0.4.
-        raise NotImplementedError("Need to implement for Task 0.4")
+        self.training = False
+        for m in self.modules():
+            m.eval()
 
     def named_parameters(self) -> Sequence[Tuple[str, Parameter]]:
         """Collect all the parameters of this module and its descendents.
@@ -47,13 +49,21 @@ class Module:
             The name and `Parameter` of each ancestor parameter.
 
         """
-        # TODO: Implement for Task 0.4.
-        raise NotImplementedError("Need to implement for Task 0.4")
+        named_params = []
+        named_params.extend((k, v) for k, v in self._parameters.items())
+        for name, mod in self._modules.items():
+            named_params.extend((f"{name}.{k}", v) for k, v in mod.named_parameters())
+
+        return named_params
 
     def parameters(self) -> Sequence[Parameter]:
         """Enumerate over all the parameters of this module and its descendents."""
-        # TODO: Implement for Task 0.4.
-        raise NotImplementedError("Need to implement for Task 0.4")
+        params = []
+        params.extend(v for v in self._parameters.values())
+        for m in self.modules():
+            params.extend(m.named_parameters())
+
+        return params
 
     def add_parameter(self, k: str, v: Any) -> Parameter:
         """Manually add a parameter. Useful helper for scalar parameters.
@@ -89,6 +99,12 @@ class Module:
         return None
 
     def __call__(self, *args: Any, **kwargs: Any) -> Any:
+        """让 Module 对象可以像函数一样被调用
+
+        Returns:
+            返回正向传播的结果，即模型的预测结果
+
+        """
         return self.forward(*args, **kwargs)
 
     def __repr__(self) -> str:
